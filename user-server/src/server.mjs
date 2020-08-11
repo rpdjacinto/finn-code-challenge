@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 
 import { generate } from './id-generator.mjs'
 import { loadUser, saveUser } from './db.mjs'
@@ -6,6 +7,7 @@ import { loadUser, saveUser } from './db.mjs'
 const server = express()
 
 server.use(express.json())
+server.use(cors())
 
 server.get('/id', (request, response) => {
     response.send({
