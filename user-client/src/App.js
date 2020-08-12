@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import useAxios from 'axios-hooks'
+import axios from 'axios'
 import styled from 'styled-components'
+import { randomName }  from './random-name'
 
 const URL = 'http://localhost:3001'
 const RETRY_COUNT_KEY = 'RETRY_COUNT'
@@ -35,22 +37,26 @@ const setRetryCount = (count) => {
 
 
 const Content = () => {
+  const newName = randomName()
+  const newUserName = newName.replace(' ', '-').toLowerCase()
+  const [data, setData] = useState(null);
+  useEffect(async () => {
+    const result = await axios.post(
+      `${URL}/user`,
+      {
+        name: newName,
+        username: newUserName
+      }
+    );
 
-  const [ { data, loading, error } ] = useAxios({
-    url: `${URL}/user`,
-    method: 'POST',
-    data: {
-      name: 'Test User',
-      username: 'test-user'
-    }
-  })
- 
-  if (loading) return <p>Loading...</p>
-  if (error) {
+    setData(result.data);
+  }, [])
+
+  if (!data) {
     return <h2>Page Failed! Reloading...</h2>
   }
 
-  return <div>
+  const component = <div>
     <h1>Created a User!</h1>
     <div>
       {data.user.name} ({data.user.username})
@@ -59,6 +65,7 @@ const Content = () => {
       ID: {data.user.id}
     </div>
   </div>
+  return component
 }
 
 const App = () => {
